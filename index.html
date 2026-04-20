@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+  <title>Trinity Academy | Premier Early Learning Centre</title>
+
+  <!-- Bootstrap 3 + Fonts + Icons -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    /* --- TRINITY ACADEMY DARK BLUE & GOLD THEME --- */
+    :root {
+      --trinity-navy: #0A2540;
+      --trinity-deepblue: #13294B;
+      --trinity-gold: #D4AF37;
+      --trinity-gold-light: #F3D572;
+      --trinity-softwhite: #F9F7F0;
+      --trinity-slate: #2C3E50;
+      --trinity-accent: #E9B741;
+      --shadow-sm: 0 15px 35px rgba(0,0,0,0.08);
+      --transition-smooth: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--trinity-softwhite);
+      color: var(--trinity-slate);
+      overflow-x: hidden;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, .navbar-brand, .title, .btn, .card-header {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+    }
+
+    /* --- ANIMATIONS: shimmer, fade-up, subtle drift --- */
+    @keyframes shimmerFloat {
+      0% { background-position: -100% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    @keyframes gentleRise {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes goldPulse {
+      0% { text-shadow: 0 0 0px rgba(212, 175, 55, 0.2); }
+      100% { text-shadow: 0 0 12px rgba(212, 175, 55, 0.6); }
+    }
+
+    /* gentle wobble for cartoon image */
+    @keyframes gentleWobble {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(1deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+
+    .animate-float-card {
+      animation: gentleRise 0.7s ease-out forwards;
+      opacity: 0;
+    }
+
+    .section .container > * {
+      animation: gentleRise 0.6s ease forwards;
+    }
+
+    /* gold dust particles */
+    .gold-dust {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      overflow: hidden;
+    }
+
+    .dust-particle {
+      position: absolute;
+      background: radial-gradient(circle, var(--trinity-gold-light), transparent);
+      border-radius: 50%;
+      opacity: 0.5;
+      animation: floatParticle 12s infinite linear;
+    }
+
+    @keyframes floatParticle {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.6; }
+      80% { opacity: 0.4; }
+      100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Navbar - dark blue & gold */
+    .navbar {
+      background: rgba(10, 37, 64, 0.96);
+      border: none;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      border-bottom: 3px solid var(--trinity-gold);
+      padding: 6px 0;
+    }
+    .navbar-brand {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: white !important;
+      letter-spacing: -0.5px;
+    }
+    .navbar-brand i {
+      color: var(--trinity-gold);
+      margin-right: 8px;
+    }
+    .navbar-nav > li > a {
+      font-weight: 600;
+      color: #f0f0f0 !important;
+      transition: 0.2s;
+      margin: 0 4px;
+      border-radius: 40px;
+    }
+    .navbar-nav > li > a:hover {
+      background: var(--trinity-gold);
+      color: var(--trinity-navy) !important;
+      transform: translateY(-2px);
+    }
+    .nav-btn {
+      background: var(--trinity-gold) !important;
+      color: var(--trinity-navy) !important;
+      border-radius: 40px !important;
+      padding: 8px 24px !important;
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(212,175,55,0.3);
+    }
+    .nav-btn:hover {
+      background: white !important;
+      color: var(--trinity-navy) !important;
+    }
+
+    /* HERO SECTION - NEW BACKGROUND IMAGE (HAPPY CHILDREN) */
+    .hero-section {
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      background: linear-gradient(135deg, rgba(10,37,64,0.75), rgba(19,41,75,0.8)), 
+                  url('https://images.pexels.com/photos/3662802/pexels-photo-3662802.jpeg?auto=compress&cs=tinysrgb&w=1600');
+      background-size: cover;
+      background-position: center 40%;
+      background-blend-mode: overlay;
+    }
+    /* Alternative fallback if needed: a colorful daycare scene */
+    .hero-text {
+      background: rgba(255,255,245,0.94);
+      backdrop-filter: blur(4px);
+      border-radius: 48px;
+      padding: 36px 44px;
+      border-left: 10px solid var(--trinity-gold);
+      box-shadow: 0 25px 40px rgba(0,0,0,0.2);
+    }
+    .typewriter-container {
+      font-family: 'Plus Jakarta Sans', monospace;
+      font-size: 2.8rem;
+      font-weight: 800;
+    }
+    .cursor {
+      display: inline-block;
+      width: 5px;
+      height: 2.8rem;
+      background: var(--trinity-gold);
+      vertical-align: middle;
+      animation: blink 0.9s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+    /* Cartoon image styling */
+    .cartoon-header-img {
+      max-width: 100%;
+      border-radius: 48px;
+      box-shadow: 0 25px 40px rgba(0,0,0,0.25);
+      border: 4px solid var(--trinity-gold);
+      background: #FFF9E8;
+      padding: 8px;
+      transition: var(--transition-smooth);
+      animation: gentleWobble 5s ease-in-out infinite;
+    }
+    .cartoon-header-img:hover {
+      transform: scale(1.02);
+      border-color: #FFDF85;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.3);
+    }
+    .cartoon-wrapper {
+      text-align: center;
+      background: rgba(10,37,64,0.3);
+      border-radius: 60px;
+      padding: 12px;
+      backdrop-filter: blur(4px);
+    }
+
+    .btn-trinity {
+      border-radius: 60px;
+      padding: 14px 36px;
+      font-weight: 800;
+      border: none;
+      transition: var(--transition-smooth);
+      box-shadow: 0 8px 14px rgba(0,0,0,0.1);
+    }
+    .btn-gold {
+      background: var(--trinity-gold);
+      color: var(--trinity-navy);
+    }
+    .btn-gold:hover {
+      background: #b58e2e;
+      transform: translateY(-4px);
+      color: white;
+    }
+    .btn-outline-gold {
+      background: transparent;
+      border: 2px solid var(--trinity-gold);
+      color: var(--trinity-navy);
+    }
+    .btn-outline-gold:hover {
+      background: var(--trinity-gold);
+      color: var(--trinity-navy);
+      transform: translateY(-3px);
+    }
+
+    /* Feature Grid */
+    .feature-icon {
+      font-size: 2.4rem;
+      color: var(--trinity-gold);
+      margin-bottom: 1rem;
+    }
+    .feature-card {
+      background: white;
+      border-radius: 28px;
+      padding: 28px 20px;
+      text-align: center;
+      transition: var(--transition-smooth);
+      border-bottom: 5px solid var(--trinity-gold);
+      box-shadow: var(--shadow-sm);
+      height: 100%;
+    }
+    .feature-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 25px 35px rgba(0,0,0,0.12);
+    }
+
+    /* Program Cards */
+    .program-card {
+      background: white;
+      border-radius: 32px;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+      box-shadow: 0 18px 30px rgba(0,0,0,0.08);
+      height: 100%;
+      border: 1px solid rgba(212,175,55,0.3);
+    }
+    .program-card:hover {
+      transform: translateY(-12px) scale(1.01);
+      box-shadow: 0 25px 40px rgba(0,0,0,0.15);
+      border-color: var(--trinity-gold);
+    }
+    .card-header {
+      padding: 24px;
+      background: var(--trinity-navy);
+      color: white;
+      text-align: center;
+      border-bottom: 3px solid var(--trinity-gold);
+    }
+    .card-header h3 { margin: 0; font-size: 1.9rem; }
+    .price-tag {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--trinity-deepblue);
+    }
+    .program-detail {
+      padding: 28px;
+      background: #FEFCF5;
+    }
+    .badge-free {
+      background: var(--trinity-gold-light);
+      color: #0A2540;
+      border-radius: 60px;
+      padding: 8px 16px;
+      font-weight: 700;
+      display: inline-block;
+      font-size: 0.85rem;
+    }
+
+    /* Gallery */
+    .gallery-card {
+      border-radius: 28px;
+      overflow: hidden;
+      transition: 0.4s;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      border: 2px solid var(--trinity-gold);
+    }
+    .gallery-card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      transition: 0.5s;
+    }
+    .gallery-card:hover img {
+      transform: scale(1.08);
+    }
+
+    /* Download Cards */
+    .download-card {
+      background: white;
+      border-radius: 28px;
+      padding: 1.6rem;
+      text-align: center;
+      border-left: 8px solid var(--trinity-gold);
+      transition: 0.3s;
+      height: 100%;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.05);
+    }
+    .download-card:hover {
+      transform: translateY(-8px);
+      background: #FFFEF7;
+    }
+
+    /* Form */
+    .form-container {
+      background: white;
+      border-radius: 38px;
+      padding: 40px;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.1);
+      border: 1px solid var(--trinity-gold);
+    }
+    .bank-details {
+      background: #F1E9D2;
+      border-left: 8px solid var(--trinity-gold);
+    }
+
+    /* Footer */
+    .footer-park {
+      background: #0A2540;
+      position: relative;
+      padding: 50px 0 30px;
+      color: white;
+      text-align: center;
+      margin-top: 60px;
+    }
+    .footer-park h3 i { color: var(--trinity-gold); }
+    .footer-park a { color: var(--trinity-gold-light); }
+
+    .title {
+      font-size: 3rem;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    .title:after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 4px;
+      background: var(--trinity-gold);
+      margin: 12px auto 0;
+      border-radius: 4px;
+    }
+    section { padding: 80px 0; }
+    @media (max-width: 768px) {
+      .title { font-size: 2.2rem; }
+      .typewriter-container { font-size: 1.8rem; }
+      .hero-text { padding: 24px; }
+      .program-card .card-header h3 { font-size: 1.5rem; }
+      .cartoon-header-img { max-width: 85%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Gold dust particles (new animation) -->
+<div class="gold-dust" id="goldDustContainer"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar" style="background:white"></span>
+        <span class="icon-bar" style="background:white"></span>
+        <span class="icon-bar" style="background:white"></span>
+      </button>
+      <a class="navbar-brand" href="#"><i class="fas fa-crown"></i> Trinity Academy</a>
+    </div>
+    <div class="collapse navbar-collapse" id="navbar-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#features">Why Us</a></li>
+        <li><a href="#programs">Programs</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#resources">Resources</a></li>
+        <li><a href="#register">Register</a></li>
+        <li><a href="#contact" class="nav-btn">Enroll Now</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO SECTION with ENHANCED BACKGROUND IMAGE (happy children) -->
+<section class="hero-section" id="home">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7">
+        <div class="hero-text">
+          <div class="typewriter-area">
+            <div id="typewriter" class="typewriter-container"></div>
+            <span class="cursor"></span>
+          </div>
+          <p style="font-size: 1.25rem; margin-top: 20px;"><i class="fas fa-graduation-cap" style="color: #D4AF37;"></i> <strong>English Medium | Modern Facility | Transport | Small Classes | FREE Stationery & Toiletries</strong></p>
+          <div class="row mt-4" style="margin-top: 25px;">
+            <div class="col-xs-6"><a href="#register" class="btn btn-trinity btn-gold btn-block"><i class="fas fa-star"></i> Enroll Today</a></div>
+            <div class="col-xs-6"><a href="#programs" class="btn btn-trinity btn-outline-gold btn-block">View Programs</a></div>
+          </div>
+        </div>
+      </div>
+      <!-- CARTOON IMAGE SIDE DECORATION -->
+      <div class="col-md-5 hidden-sm hidden-xs text-center">
+        <div class="cartoon-wrapper">
+          <img class="cartoon-header-img" src="https://cdn.pixabay.com/photo/2020/07/06/01/33/kindergarten-5375005_640.png" 
+               alt="Cartoon illustration of happy children playing and learning together at Trinity Academy" 
+               title="Joyful learning at Trinity Academy">
+          <p style="color: #FFE3A4; margin-top: 12px; font-weight: 500; text-shadow: 1px 1px 0 #0A2540;"><i class="fas fa-heart" style="color: #D4AF37;"></i> Where little leaders shine</p>
+        </div>
+      </div>
+      <!-- For mobile: show cartoon as well but smaller -->
+      <div class="col-xs-12 visible-sm visible-xs text-center" style="margin-top: 20px;">
+        <div class="cartoon-wrapper" style="display: inline-block; max-width: 280px;">
+          <img class="cartoon-header-img" src="https://cdn.pixabay.com/photo/2020/07/06/01/33/kindergarten-5375005_640.png" 
+               alt="Cartoon kids" style="max-width: 100%; border-radius: 40px;">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES SECTION: english medium, transport, small ratio, free stationery/toiletries -->
+<section id="features" class="section" style="background: #FEF9E6;">
+  <div class="container">
+    <h2 class="title text-center">Why Trinity Academy?</h2>
+    <div class="row">
+      <div class="col-md-3 col-sm-6"><div class="feature-card"><div class="feature-icon"><i class="fas fa-language"></i></div><h4>English Medium</h4><p>Fully immersive English instruction, building confidence from day one.</p></div></div>
+      <div class="col-md-3 col-sm-6"><div class="feature-card"><div class="feature-icon"><i class="fas fa-bus"></i></div><h4>Transport Services</h4><p>Safe, monitored door-to-door transport with trained drivers.</p></div></div>
+      <div class="col-md-3 col-sm-6"><div class="feature-card"><div class="feature-icon"><i class="fas fa-children"></i></div><h4>Small Class Ratio</h4><p>Max 1:8 teacher-child ratio, individual attention guaranteed.</p></div></div>
+      <div class="col-md-3 col-sm-6"><div class="feature-card"><div class="feature-icon"><i class="fas fa-gift"></i></div><h4>FREE Stationery & Toiletries</h4><p>All learning materials, art supplies & toiletries provided.</p></div></div>
+    </div>
+    <div class="row mt-4" style="margin-top: 30px;"><div class="col-md-12 text-center"><span class="badge-free" style="background: var(--trinity-gold); font-size: 1rem;"><i class="fas fa-hand-sparkles"></i> Fully equipped facility: sensory room, library, outdoor play, CCTV</span></div></div>
+  </div>
+</section>
+
+<!-- PROGRAMS SECTION: with free stationery & toiletries -->
+<section id="programs" class="section">
+  <div class="container">
+    <h2 class="title text-center">Our Learning Pathways</h2>
+    <div class="row">
+      <div class="col-sm-6 col-lg-3"><div class="program-card"><div class="card-header"><h3>🐣 Little Stars</h3><small>0 – 2 Years</small></div><div class="program-detail"><div class="price-tag">R850 <span style="font-size:1rem;">/month</span></div><p>Sensory exploration, bonding, and motor skills. FREE stationery + toiletries included.</p><span class="badge-free"><i class="fas fa-check-circle"></i> All supplies covered</span></div></div></div>
+      <div class="col-sm-6 col-lg-3"><div class="program-card"><div class="card-header"><h3>🎨 Bright Cubs</h3><small>2 – 3 Years</small></div><div class="program-detail"><div class="price-tag">R750</div><p>Social play, creativity & early communication. FREE art set + toiletries.</p><span class="badge-free"><i class="fas fa-brush"></i> No extra costs</span></div></div></div>
+      <div class="col-sm-6 col-lg-3"><div class="program-card"><div class="card-header"><h3>📖 Pre-Grade R</h3><small>3 – 4 Years</small></div><div class="program-detail"><div class="price-tag">R650</div><p>Literacy, numeracy & leadership skills. All stationery provided.</p><span class="badge-free"><i class="fas fa-book-open"></i> Free learning pack</span></div></div></div>
+      <div class="col-sm-6 col-lg-3"><div class="program-card"><div class="card-header"><h3>🎓 Grade R Explorers</h3><small>5 – 6 Years</small></div><div class="program-detail"><div class="price-tag">R850</div><p>School readiness & confidence. Full graduation ceremony & free supplies.</p><span class="badge-free"><i class="fas fa-graduation-cap"></i> All-inclusive</span></div></div></div>
+    </div>
+    <p class="text-center" style="margin-top: 30px;"><i class="fas fa-truck-fast"></i> <strong>Transport service available:</strong> R250/month (optional, safe & reliable).</p>
+  </div>
+</section>
+
+<!-- GALLERY SECTION -->
+<section id="gallery" style="background: #F3EFE2; padding: 80px 0;">
+  <div class="container">
+    <h2 class="title text-center">Moments of Discovery</h2>
+    <div class="row">
+      <div class="col-md-4"><div class="gallery-card"><img src="https://images.pexels.com/photos/3662767/pexels-photo-3662767.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop" alt="classroom activity"></div></div>
+      <div class="col-md-4"><div class="gallery-card"><img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&h=600&fit=crop" alt="outdoor play"></div></div>
+      <div class="col-md-4"><div class="gallery-card"><img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=800&h=600&fit=crop" alt="art session"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PARENT RESOURCES (Download cards) -->
+<section id="resources" class="section">
+  <div class="container">
+    <h2 class="title text-center">📘 Parent Hub</h2>
+    <div class="row">
+      <div class="col-md-3 col-sm-6"><div class="download-card"><i class="fas fa-chart-line download-icon" style="font-size:2.5rem; color:#D4AF37;"></i><h4>Progress Report</h4><p>Monthly development insights</p><input type="text" id="studentReportNum" class="student-input" placeholder="Student ID (6 digits)" maxlength="6" style="border-radius:40px; border:1px solid #D4AF37;"><button class="btn btn-sm" style="background:#13294B; color:white; border-radius:40px; margin-top:10px;" onclick="downloadRestrictedPDF('report')">Download PDF</button></div></div>
+      <div class="col-md-3 col-sm-6"><div class="download-card"><i class="fas fa-calendar-alt" style="font-size:2.5rem; color:#D4AF37;"></i><h4>Year Plan 2026</h4><p>Academic calendar & events</p><input type="text" id="studentYearNum" class="student-input" placeholder="Student ID (6 digits)" maxlength="6" style="border-radius:40px; border:1px solid #D4AF37;"><button class="btn btn-sm" style="background:#13294B; color:white; border-radius:40px; margin-top:10px;" onclick="downloadRestrictedPDF('yearplan')">Download PDF</button></div></div>
+      <div class="col-md-3 col-sm-6"><div class="download-card"><i class="fas fa-pencil-ruler" style="font-size:2.5rem; color:#D4AF37;"></i><h4>Stationery List</h4><p>All items FREE for enrolled kids</p><button class="btn btn-sm" style="background:#D4AF37; color:#0A2540; border-radius:40px; margin-top:15px;" onclick="downloadOpenPDF('stationery')">Download PDF</button></div></div>
+      <div class="col-md-3 col-sm-6"><div class="download-card"><i class="fas fa-clipboard-list" style="font-size:2.5rem; color:#D4AF37;"></i><h4>Enrollment Guide</h4><p>Steps & requirements</p><button class="btn btn-sm" style="background:#D4AF37; color:#0A2540; border-radius:40px; margin-top:15px;" onclick="downloadOpenPDF('enrollment')">Download PDF</button></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- REGISTRATION SECTION -->
+<section id="register" class="section" style="background: #FDF9EF;">
+  <div class="container">
+    <h2 class="title text-center">Start Your Journey</h2>
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="form-container">
+          <form id="registrationForm">
+            <div class="form-group"><label><i class="fas fa-user-graduate"></i> Child's Full Name</label><input type="text" class="form-control" placeholder="e.g. Olivia Thompson" required></div>
+            <div class="form-group"><label><i class="fas fa-envelope"></i> Parent Email</label><input type="email" class="form-control" placeholder="parent@example.com" required></div>
+            <div class="form-group"><label><i class="fas fa-phone-alt"></i> Contact Number</label><input type="tel" class="form-control" placeholder="+27 83 456 7890" required></div>
+            <div class="form-group"><label><i class="fas fa-cloud-upload-alt"></i> Proof of Payment / Deposit Receipt</label><input type="file" class="form-control" style="border:2px dashed #D4AF37;" required></div>
+            <div class="bank-details p-3 mb-3"><i class="fas fa-university"></i> <strong>Trinity Academy Banking</strong><br><small>Bank: FNB | Acc: 62849502617 | Branch: 250655 | Ref: ChildName_Trinity</small></div>
+            <button type="submit" class="btn btn-trinity btn-gold btn-block btn-lg"><i class="fas fa-check-circle"></i> Submit Enrollment</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER with dark blue & gold -->
+<footer class="footer-park" id="contact">
+  <div class="container">
+    <h3><i class="fas fa-crown"></i> Trinity Academy | Where Excellence Meets Heart</h3>
+    <p><i class="fas fa-map-marker-alt"></i> 45 Eton Lane, Cape Town 8001 | <i class="fas fa-phone-alt"></i> +27 21 456 7890 | <i class="fas fa-envelope"></i> info@trinityacademy.co.za</p>
+    <p><i class="fas fa-graduation-cap"></i> English Medium | Fully Equipped | Safe Transport | Small Classes | FREE Stationery & Toiletries</p>
+    <p style="margin-top: 20px;">&copy; 2026 Trinity Academy Early Learning Centre — Building Bright Futures</p>
+  </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<script>
+  // GOLD DUST PARTICLES (playful animation)
+  function createGoldDust() {
+    const container = document.getElementById('goldDustContainer');
+    for(let i=0; i<55; i++) {
+      let particle = document.createElement('div');
+      particle.classList.add('dust-particle');
+      let size = Math.random() * 8 + 3;
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDuration = 12 + Math.random() * 15 + 's';
+      particle.style.animationDelay = Math.random() * 10 + 's';
+      particle.style.opacity = Math.random() * 0.5 + 0.2;
+      container.appendChild(particle);
+    }
+  }
+  createGoldDust();
+
+  // TYPEWRITER with Trinity phrases
+  const typePhrases = [
+    { text: "TRINITY", color: "#0A2540" },
+    { text: " ACADEMY", color: "#D4AF37" },
+    { text: " ★ EXCELLENCE", color: "#13294B" },
+    { text: " ★ ENGLISH MEDIUM", color: "#D4AF37" },
+    { text: " ★ SMALL CLASSES", color: "#0A2540" }
+  ];
+  let fullChars = [];
+  typePhrases.forEach(phrase => {
+    for(let ch of phrase.text) fullChars.push({ char: ch, color: phrase.color });
+  });
+  let currentIdx = 0;
+  let $typeContainer = $('#typewriter');
+  let typingTimer;
+
+  function updateTyping() {
+    $typeContainer.empty();
+    for(let i=0; i<currentIdx; i++) {
+      $('<span>').css('color', fullChars[i].color).text(fullChars[i].char).appendTo($typeContainer);
+    }
+  }
+  function typeNext() {
+    if(currentIdx < fullChars.length) {
+      currentIdx++;
+      updateTyping();
+      typingTimer = setTimeout(typeNext, 60);
+    } else {
+      typingTimer = setTimeout(() => { startDelete(); }, 2000);
+    }
+  }
+  function startDelete() {
+    if(currentIdx > 0) {
+      currentIdx--;
+      updateTyping();
+      typingTimer = setTimeout(startDelete, 40);
+    } else {
+      typingTimer = setTimeout(() => { typeNext(); }, 400);
+    }
+  }
+  setTimeout(typeNext, 300);
+
+  // registration form submit
+  $('#registrationForm').on('submit', function(e) {
+    e.preventDefault();
+    let child = $(this).find('input[placeholder*="Child"]').val() || "child";
+    let msg = `<i class="fas fa-check-circle"></i> 🎉 Thank you! ${child} has been pre-enrolled. Our team will contact you within 24h.`;
+    let notify = $('<div>').css({position:'fixed',bottom:'20px',right:'20px',background:'#13294B',color:'#D4AF37',padding:'14px 24px',borderRadius:'40px',zIndex:9999,fontWeight:'bold',boxShadow:'0 10px 20px rgba(0,0,0,0.2)'}).html(msg);
+    $('body').append(notify);
+    setTimeout(()=>notify.fadeOut(600, function(){$(this).remove();}), 4000);
+    this.reset();
+  });
+
+  // smooth scroll
+  $('a[href*="#"]:not([href="#"])').click(function(e) {
+    if(location.pathname.replace(/^\//,'')===this.pathname.replace(/^\//,'') && location.hostname===this.hostname) {
+      let target = $(this.hash);
+      if(target.length) { e.preventDefault(); $('html,body').animate({scrollTop: target.offset().top - 70}, 600); }
+    }
+  });
+
+  // PDF GENERATION
+  const { jsPDF } = window.jspdf;
+  function generatePDF(title, content, filename) {
+    const doc = new jsPDF();
+    doc.setFont("helvetica");
+    doc.setTextColor(10,37,64);
+    doc.setFontSize(18);
+    doc.text(title, 20, 20);
+    doc.setFontSize(11);
+    let y = 35;
+    const lines = content.split('\n');
+    for(let line of lines) {
+      if(y > 280) { doc.addPage(); y = 20; }
+      doc.text(line, 20, y);
+      y += 6;
+    }
+    doc.save(filename);
+  }
+
+  window.downloadRestrictedPDF = function(type) {
+    let studentNum = type === 'report' ? document.getElementById('studentReportNum').value.trim() : document.getElementById('studentYearNum').value.trim();
+    if(!studentNum) { alert("Please enter a valid 6-digit student number."); return; }
+    if(!/^\d{6}$/.test(studentNum)) { alert("Student number must be exactly 6 digits."); return; }
+    let title, content, filename;
+    if(type === 'report') {
+      title = "Trinity Academy Progress Report";
+      filename = `Trinity_Report_${studentNum}.pdf`;
+      content = `TRINITY ACADEMY - EARLY LEARNING REPORT\nStudent ID: ${studentNum}\nDate: ${new Date().toLocaleDateString()}\n\n--- ACADEMIC & SOCIAL MILESTONES ---\nLiteracy: Building phonemic awareness\nNumeracy: Counting & patterns\nSocial: Excellent collaboration in small class setting\nPhysical: Active participation\nTeacher's remarks: Shines in group activities.\nFREE stationery & toiletries provided this term.\n\n© Trinity Academy`;
+    } else {
+      title = "Trinity Academy Year Plan 2026";
+      filename = `Trinity_YearPlan_${studentNum}.pdf`;
+      content = `TRINITY ACADEMY - YEAR PLAN 2026\n\nTERM 1 (Jan-Mar): Welcome orientation, English language boost, Parent day 13 March\nTERM 2 (Apr-Jun): Reading festival, Creative arts showcase (10 May)\nTERM 3 (Jul-Sep): STEM exploration, Sports & Leadership Day\nTERM 4 (Oct-Dec): Year-end concert, Graduation ceremony (28 November)\nTransport services available. Small class ratios ensure individual progress.\n\nFREE stationery and toiletries for all enrolled learners.`;
+    }
+    generatePDF(title, content, filename);
+    alert(`✅ ${filename} downloaded!`);
+  };
+
+  window.downloadOpenPDF = function(type) {
+    let title, content, filename;
+    if(type === 'stationery') {
+      title = "FREE Stationery & Toiletries List";
+      filename = "Trinity_Stationery_Free.pdf";
+      content = `TRINITY ACADEMY - COMPLIMENTARY STATIONERY & TOILETRIES\n\nFor every enrolled child (all age groups):\n✅ Exercise books (x5)\n✅ Crayons (24 colors)\n✅ Colored pencils\n✅ Felt tip pens\n✅ Child-safe scissors & glue\n✅ Paint set & brushes\n✅ Play dough set\n✅ Pencil case with pencils, eraser, sharpener\n✅ Water bottle\n✅ Toiletries pack: wipes, hand sanitizer, tissues, spare nappy (infants)\n\nZero cost — included in tuition. No hidden fees.\n\n© Trinity Academy`;
+    } else {
+      title = "Trinity Academy Enrollment Requirements";
+      filename = "Trinity_Enrollment.pdf";
+      content = `TRINITY ACADEMY - ENROLLMENT GUIDE\n\nREQUIRED DOCUMENTS:\n- Completed registration form\n- Child's Birth Certificate (copy)\n- Immunization card\n- Parent/Guardian ID\n- Proof of address\n- 2 recent photos\n\nREGISTRATION FEE: R350 (once-off)\nMONTHLY FEES: R650 - R850 depending on age group (includes FREE stationery, toiletries, all learning materials).\nTransport optional: R250/month\n\nBANK DETAILS:\nBank: FNB\nAccount: 62849502617\nBranch: 250655\nRef: ChildName_Trinity\n\nSMALL CLASS RATIO GUARANTEED (max 1:8). English medium, modern facility, after-care options available.\n\nCONTACT: info@trinityacademy.co.za | +27 21 456 7890`;
+    }
+    generatePDF(title, content, filename);
+    alert(`✅ ${filename} downloaded!`);
+  };
+</script>
+</body>
+</html>
